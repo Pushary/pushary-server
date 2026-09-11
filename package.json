@@ -1,0 +1,70 @@
+{
+  "name": "@pushary/server",
+  "version": "2.1.0",
+  "description": "Pushary Server SDK: send push notifications and add human-in-the-loop approvals to your AI agent (pause on a decision until a specific human answers).",
+  "author": "Pushary <business@pushary.com>",
+  "homepage": "https://pushary.com",
+  "bugs": {
+    "url": "https://github.com/Pushary/pushary-server/issues"
+  },
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./adapters": {
+      "types": "./dist/adapters.d.ts",
+      "import": "./dist/adapters.js",
+      "require": "./dist/adapters.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "npm run build && npm run typecheck"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.0.0",
+    "vitest": "^2.1.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "pushary",
+    "push-notifications",
+    "web-push",
+    "notifications",
+    "server-sdk",
+    "api-client",
+    "ai-agents",
+    "human-in-the-loop",
+    "hitl",
+    "agent-approvals",
+    "llm"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Pushary/pushary-server.git"
+  }
+}
