@@ -574,6 +574,36 @@ export interface Decision {
   readonly expiresAt: string | null
 }
 
+export interface ListedDecision {
+  readonly decisionId: string | null
+  readonly status: DecisionStatus
+  readonly answered: boolean
+  readonly value: string | null
+  readonly type: string | null
+  readonly question: string
+  readonly externalId: string | null
+  readonly context: string | null
+  readonly createdAt: string
+  readonly answeredAt: string | null
+  readonly toolName: string | null
+  readonly toolTarget: string | null
+  readonly autoResolved: boolean
+  readonly decisionOrigin: string | null
+}
+
+export interface DecisionListOptions {
+  readonly limit?: number
+  readonly cursor?: string
+  readonly from?: string
+  readonly to?: string
+  readonly externalId?: string
+}
+
+export interface DecisionList {
+  readonly decisions: readonly ListedDecision[]
+  readonly nextCursor: string | null
+}
+
 export interface DecisionAnswerResult {
   readonly decisionId: string
   readonly status: DecisionStatus

@@ -3,6 +3,8 @@ import type {
   CreateDecision,
   DecisionResult,
   Decision,
+  DecisionList,
+  DecisionListOptions,
   DecisionAnswerResult,
   CancelDecisionResult,
   WebhookSecret,
@@ -29,6 +31,7 @@ export interface DecisionsResource {
   // Poll for the outcome. opts.wait long-polls up to N seconds. Reads durably, so
   // it still resolves after the live window closes.
   readonly get: (id: string, opts?: { readonly wait?: number }) => Promise<Decision>
+  readonly list: (opts?: DecisionListOptions) => Promise<DecisionList>
   // Create a decision and block until the human answers or the deadline passes,
   // polling durably (so a crashed/resumed process still gets the answer). Returns
   // a fail-closed `approved` flag. Default deadline 55s (serverless-safe); the
@@ -142,6 +145,8 @@ export const createDecisionsResource = (request: RequestFn): DecisionsResource =
     create: (data: CreateDecision) => request<DecisionResult>('POST', '/decisions', data),
     get: (id: string, opts?: { readonly wait?: number }) =>
       request<Decision>('GET', `/decisions/${id}`, opts?.wait ? { wait: opts.wait } : undefined),
+    list: (opts?: DecisionListOptions) =>
+      request<DecisionList>('GET', '/decisions', opts ? { ...opts } : undefined),
     ask,
     answer: (id: string, answer: string) =>
       request<DecisionAnswerResult>('POST', `/decisions/${id}`, { answer }),

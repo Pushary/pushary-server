@@ -174,6 +174,19 @@ const { webhookSecret } = await pushary.decisions.getWebhookSecret()
 const ok = verifyWebhookSignature(rawBody, signatureHeader, webhookSecret)
 ```
 
+### List decisions
+
+`decisions.list()` returns customer decisions newest first, within your plan's retention window. Bound keys only see their own customer. Sandbox tests and Pushary's internal preview/onboarding recipients are excluded. Status is `pending`, `answered`, `expired`, or `cancelled`.
+
+```ts
+const page = await pushary.decisions.list({ externalId: 'user-123', limit: 50 })
+const next = page.nextCursor
+  ? await pushary.decisions.list({ externalId: 'user-123', limit: 50, cursor: page.nextCursor })
+  : null
+```
+
+Pass `nextCursor` unchanged with the same filters. It is opaque; malformed cursors return HTTP 400.
+
 ### Helpers
 
 Four exports that the flows above rely on. Signatures are given because guessing

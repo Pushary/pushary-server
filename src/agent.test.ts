@@ -437,3 +437,18 @@ describe('ask deadline', () => {
     await expect(px().decisions.ask({ question: 'Approve?', timeoutMs: 10 })).rejects.toMatchObject({ name: 'TimeoutError' })
   })
 })
+
+
+describe('decisions.list', () => {
+  it('passes the opaque cursor and recipient filters unchanged and preserves terminal statuses', async () => {
+    const response = { decisions: [{ decisionId: 'cancelled', status: 'cancelled', answered: false }, { decisionId: 'expired', status: 'expired', answered: false }], nextCursor: 'next-opaque_cursor' }
+    const calls = installFetch([() => ({ json: response })])
+    expect(await px().decisions.list({ externalId: 'customer & 1', cursor: 'opaque_cursor-1', limit: 7 })).toEqual(response)
+    const url = new URL(calls[0].url)
+    expect(calls[0].method).toBe('GET')
+    expect(url.pathname).toBe('/api/v1/server/decisions')
+    expect(url.searchParams.get('externalId')).toBe('customer & 1')
+    expect(url.searchParams.get('cursor')).toBe('opaque_cursor-1')
+    expect(url.searchParams.get('limit')).toBe('7')
+  })
+})
