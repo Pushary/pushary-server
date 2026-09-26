@@ -1,6 +1,14 @@
 # @pushary/server
 
-Server-side SDK for [Pushary](https://pushary.com): send push notifications, and add human-in-the-loop approvals to your AI agent (pause on a decision until a specific human answers).
+The decision layer for AI agents. Your agent asks, your user decides on their phone.
+
+This is the server SDK for [Pushary](https://pushary.com). It also sends push notifications.
+
+## What you need
+
+- A Pushary Partner plan, from $99 a month, to ask your own users. [Start the trial](https://pushary.com/sign-up?from=agent&plan=partner).
+- An API key from [Partner onboarding](https://pushary.com/onboarding/partner), set as `PUSHARY_API_KEY`.
+- Your users install the free Pushary app ([iPhone](https://apps.apple.com/us/app/pushary/id6785677563), [Android](https://play.google.com/store/apps/details?id=com.pushary.app)). They never sign up or pay.
 
 ## Installation
 
@@ -19,6 +27,38 @@ bun add @pushary/server
 ```typescript
 import { createPusharyServer } from '@pushary/server'
 
+const pushary = createPusharyServer({ apiKey: process.env.PUSHARY_API_KEY })
+
+const { universalLink } = await pushary.enroll('user-123')
+// Once per user: show universalLink as a button or QR code.
+
+const { approved } = await pushary.decisions.ask({
+  externalId: 'user-123',
+  question: 'Issue a $50 refund?',
+  type: 'confirm', // confirm | select | input
+})
+if (approved) await issueRefund()
+```
+
+That is the whole integration: connect a user's phone once, then ask them whenever
+your agent needs a yes. `ask()` creates a fresh decision per call and waits until the
+person answers or the deadline passes (55 seconds by default). `approved` is true only
+when the person said yes, so a declined, expired or unanswered decision blocks the
+action. For longer waits, see [Decisions (lower-level)](#decisions-lower-level).
+
+## API Key
+
+The server SDK requires your full API key (`pk_xxx.sk_xxx`) which includes the secret portion. 
+
+**Never expose this in client-side code.**
+
+Get your API key by following [Get your API key](https://pushary.com/docs/agents/api-key).
+
+## Push notifications quick start
+
+```typescript
+import { createPusharyServer } from '@pushary/server'
+
 const pushary = createPusharyServer({
   apiKey: process.env.PUSHARY_API_KEY,
 })
@@ -29,14 +69,6 @@ await pushary.notifications.send({
   subscriberIds: ['sub_123'],
 })
 ```
-
-## API Key
-
-The server SDK requires your full API key (`pk_xxx.sk_xxx`) which includes the secret portion. 
-
-**Never expose this in client-side code.**
-
-Get your API key by following [Get your API key](https://pushary.com/docs/agents/api-key).
 
 ## Resources
 
@@ -120,30 +152,6 @@ await pushary.notifications.send({
   tags: ['vip'],
 })
 ```
-
-### Human-in-the-loop for agents (the two-call contract)
-
-The whole integration is two calls. Connect an end-user's phone once, then ask them
-whenever your agent needs a human. Requires the [Partner plan](https://pushary.com/agent-notifications-integration).
-
-```typescript
-// 1. Connect an end-user's phone (keyless, no account for them). Show the link.
-const { universalLink } = await pushary.enroll('user-123')
-// Render universalLink as a button or QR. One tap turns on approvals.
-
-// 2. Ask that person and block until they answer. Fail-closed `approved` flag.
-const { approved, value, status } = await pushary.decisions.ask({
-  externalId: 'user-123',
-  question: 'Issue a $50 refund?',
-  type: 'confirm',                // confirm | select | input
-})
-if (approved) await issueRefund()
-```
-
-`ask()` creates a fresh decision per call and polls
-durably until the human answers or the deadline passes (default 55s for a positive local wait budget).
-`approved` is true only when the person actually said yes, so a declined, expired, or
-unanswered decision safely blocks the action.
 
 ### Decisions (lower-level)
 
@@ -316,15 +324,15 @@ names asks a person. `run` is called only after the action is authorized, and an
 error it throws is not caught: reporting it as `ok: false` would be
 indistinguishable from a refusal.
 
-`protect()` is **at most once**. The decision is idempotent — a replay of the same
-`runId` + `callId` + action lands on the same approval instead of asking twice — and
+`protect()` is **at most once**. The decision is idempotent: a replay of the same
+`runId` + `callId` + action lands on the same approval instead of asking twice: and
 the approval is then spent against a durable permit before `run` is called. A retry, a
 concurrent worker and a resumed run all reach the same permit and exactly one of them
 proceeds; the rest come back `ok: false` with a reason worded to stop the model rather
 than invite another attempt.
 
-The permit is bound to the exact subject that was authorized — the action, its target,
-the actor, the environment, the end-user and every fact you sent — so changing the
+The permit is bound to the exact subject that was authorized: the action, its target,
+the actor, the environment, the end-user and every fact you sent: so changing the
 amount between the approval and the execution leaves you with no permit for the action
 you now want to run. `protect()` then records `succeeded` or `failed` against it; a
 process that dies mid-action leaves the permit unresolved, which is visible and

@@ -1,7 +1,7 @@
 {
   "name": "@pushary/server",
   "version": "2.2.0",
-  "description": "Pushary Server SDK: send push notifications and add human-in-the-loop approvals to your AI agent (pause on a decision until a specific human answers).",
+  "description": "The decision layer for AI agents. Your agent asks, your user decides on their phone. Also sends push notifications.",
   "author": "Pushary <business@pushary.com>",
   "homepage": "https://pushary.com",
   "bugs": {
@@ -53,7 +53,6 @@
   "keywords": [
     "pushary",
     "push-notifications",
-    "web-push",
     "notifications",
     "server-sdk",
     "api-client",
@@ -61,7 +60,10 @@
     "human-in-the-loop",
     "hitl",
     "agent-approvals",
-    "llm"
+    "llm",
+    "approvals",
+    "approval",
+    "tool-approval"
   ],
   "repository": {
     "type": "git",
