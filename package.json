@@ -1,6 +1,6 @@
 {
   "name": "@pushary/server",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "The decision layer for AI agents. Your agent asks, your user decides on their phone. Also sends push notifications.",
   "author": "Pushary <business@pushary.com>",
   "homepage": "https://pushary.com",
