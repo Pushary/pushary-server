@@ -256,7 +256,8 @@ For an explicit human gate, set `policy: false`. The gate keeps the full review 
 **Upgrade handling:** version 2.1 changes human gate keys. Finish already-started operations on the SDK version that created them, or migrate their persisted bindings explicitly. Do not replay previously executed operations through the new key scheme. A fingerprint identifies the proposed action; the application's execution record and framework persistence still own recovery after an uncertain tool execution.
 
 Every official Pushary adapter (`@pushary/eve`, `@pushary/ai-sdk`,
-`@pushary/langgraph`, `@pushary/mastra`, `@pushary/openai-agents`) is a thin binding
+`@pushary/langgraph`, `@pushary/mastra`, `@pushary/openai-agents`,
+`@pushary/claude-agent-sdk`) is a thin binding
 over one shared kernel, and that kernel is public. If you run an in-house harness, or
 a framework we have not shipped for, this is the same surface they are built on.
 
