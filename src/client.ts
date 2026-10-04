@@ -60,11 +60,11 @@ export interface PusharyServer {
 
 const validateApiKey = (apiKey: string): void => {
   if (!apiKey) {
-    throw new Error('API key is required. Get your API key from https://pushary.com/dashboard/settings')
+    throw new Error('API key is required. Get your API key from https://pushary.com/dashboard/agent/settings')
   }
   
   if (!apiKey.includes('.')) {
-    throw new Error('Invalid API key format. Use the full API key (pk_xxx.sk_xxx)')
+    throw new Error('Invalid API key format. Use the full API key (pk_xxx.xxx)')
   }
 }
 

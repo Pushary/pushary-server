@@ -22,7 +22,7 @@ import type {
 
 /** Config every adapter accepts, whatever framework it binds. */
 export interface PusharyAdapterConfig {
-  /** Pushary API key (pk_xxx.sk_xxx). Defaults to `process.env.PUSHARY_API_KEY`. */
+  /** Pushary API key (pk_xxx.xxx). Defaults to `process.env.PUSHARY_API_KEY`. */
   readonly apiKey?: string
   /** Shown on the approval so the human knows which agent is asking. */
   readonly agentName?: string
