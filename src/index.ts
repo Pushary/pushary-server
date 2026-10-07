@@ -29,6 +29,7 @@ export type {
   FlowStepInput,
   ListParams,
   PaginatedResponse,
+  DecisionRequestOptions,
   DecisionType,
   DecisionStatus,
   DecisionSubject,

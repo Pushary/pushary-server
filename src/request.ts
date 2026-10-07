@@ -49,13 +49,26 @@ export const createRequest = (ctx: RequestContext): RequestFn =>
       ? buildUrl(ctx.baseUrl, path, body as Record<string, unknown>)
       : `${ctx.baseUrl}${path}`
     
-    const response = await fetch(url, {
-      method,
-      signal: options?.signal ?? AbortSignal.timeout(ctx.timeoutMs ?? 65_000),
-      headers: ctx.headers,
-      body: !isGet && body ? JSON.stringify(body) : undefined,
-    })
-    
-    return handleResponse<T>(response)
+    options?.signal?.throwIfAborted()
+    const controller = new AbortController()
+    const abort = (): void => controller.abort(options?.signal?.reason)
+    options?.signal?.addEventListener('abort', abort, { once: true })
+    const timer = setTimeout(() => controller.abort(new DOMException('Pushary request timed out', 'TimeoutError')), ctx.timeoutMs ?? 65_000)
+    try {
+      const response = await fetch(url, {
+        method,
+        signal: controller.signal,
+        headers: ctx.headers,
+        body: !isGet && body ? JSON.stringify(body) : undefined,
+      })
+      const result = await handleResponse<T>(response)
+      controller.signal.throwIfAborted()
+      return result
+    } catch (error) {
+      controller.signal.throwIfAborted()
+      throw error
+    } finally {
+      clearTimeout(timer)
+      options?.signal?.removeEventListener('abort', abort)
+    }
   }
-

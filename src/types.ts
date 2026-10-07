@@ -689,7 +689,8 @@ export interface AskResult extends DecisionReachability {
 // Per-end-user (bound) key issuance for multi-tenant Partners. Mint one with
 // keys.issue({ externalId }) for a single end-user session, hand it to the agent
 // acting for that user, and revoke it with keys.revoke(keyPrefix) when done. A
-// bound key can only create/resolve decisions and enroll that exact end-user.
+// bound key can only create, read and cancel decisions for that exact end-user and
+// enroll them. It cannot answer a decision.
 export interface IssueBoundKey {
   readonly externalId: string
   readonly name?: string
@@ -727,3 +728,7 @@ export type RequestFn = <T>(
   body?: unknown,
   options?: { readonly signal?: AbortSignal },
 ) => Promise<T>
+
+export interface DecisionRequestOptions {
+  readonly signal?: AbortSignal
+}

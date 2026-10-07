@@ -434,3 +434,14 @@ A positive `timeoutMs` covers creation and polling. `timeoutMs: 0` retains creat
 ### Upgrading to 2.0
 
 Upgrade the framework adapter alongside this SDK. Durable helpers now require an explicit `idempotencyKey` tied to the run and step. The 0.3 LangGraph, Mastra and OpenAI adapters support this contract. Earlier adapters must keep the 1.x SDK until migrated. Independent blocking calls no longer deduplicate by question text.
+
+### Cancel decision HTTP work
+
+`decisions.create(data, { signal })`, `decisions.get(id, { wait, signal })`, and
+`decisions.cancel(id, { signal })` accept an optional `AbortSignal`. The HTTP
+`requestTimeoutMs` still applies when a caller signal is present, including while
+reading the response body. Caller cancellation preserves its abort reason;
+HTTP deadline expiry raises `TimeoutError`. These calls do not retry internally.
+Aborting HTTP work does not withdraw a server-side decision: cancel its known ID
+with a separate cleanup signal. A lost create response may leave a decision until
+its configured expiration.

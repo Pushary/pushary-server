@@ -1,5 +1,6 @@
 import type {
   RequestFn,
+  DecisionRequestOptions,
   CreateDecision,
   DecisionResult,
   Decision,
@@ -27,10 +28,10 @@ export interface DecisionsResource {
   // Create a decision. Defaults to async (returns immediately with a decisionId);
   // pass wait:true to block up to ~55s for a fast answer. Always pass
   // idempotencyKey so a retried call does not ask the same human twice.
-  readonly create: (data: CreateDecision) => Promise<DecisionResult>
+  readonly create: (data: CreateDecision, options?: DecisionRequestOptions) => Promise<DecisionResult>
   // Poll for the outcome. opts.wait long-polls up to N seconds. Reads durably, so
   // it still resolves after the live window closes.
-  readonly get: (id: string, opts?: { readonly wait?: number }) => Promise<Decision>
+  readonly get: (id: string, opts?: DecisionRequestOptions & { readonly wait?: number }) => Promise<Decision>
   readonly list: (opts?: DecisionListOptions) => Promise<DecisionList>
   // Create a decision and block until the human answers or the deadline passes,
   // polling durably (so a crashed/resumed process still gets the answer). Returns
@@ -44,7 +45,7 @@ export interface DecisionsResource {
   readonly ask: (data: AskDecision) => Promise<AskResult>
   // Relay the end-user's answer from your own authenticated app (delegated auth).
   readonly answer: (id: string, answer: string) => Promise<DecisionAnswerResult>
-  readonly cancel: (id: string) => Promise<CancelDecisionResult>
+  readonly cancel: (id: string, options?: DecisionRequestOptions) => Promise<CancelDecisionResult>
   // Your webhook signing secret (created on first call). Verify callbacks with
   // verifyWebhookSignature(rawBody, header, secret).
   readonly getWebhookSecret: () => Promise<WebhookSecret>
@@ -142,15 +143,15 @@ export const createDecisionsResource = (request: RequestFn): DecisionsResource =
   }
 
   return Object.freeze({
-    create: (data: CreateDecision) => request<DecisionResult>('POST', '/decisions', data),
-    get: (id: string, opts?: { readonly wait?: number }) =>
-      request<Decision>('GET', `/decisions/${id}`, opts?.wait ? { wait: opts.wait } : undefined),
+    create: (data: CreateDecision, options?: DecisionRequestOptions) => request<DecisionResult>('POST', '/decisions', data, options),
+    get: (id: string, opts?: DecisionRequestOptions & { readonly wait?: number }) =>
+      request<Decision>('GET', `/decisions/${id}`, opts?.wait ? { wait: opts.wait } : undefined, opts),
     list: (opts?: DecisionListOptions) =>
       request<DecisionList>('GET', '/decisions', opts ? { ...opts } : undefined),
     ask,
     answer: (id: string, answer: string) =>
       request<DecisionAnswerResult>('POST', `/decisions/${id}`, { answer }),
-    cancel: (id: string) => request<CancelDecisionResult>('DELETE', `/decisions/${id}`),
+    cancel: (id: string, options?: DecisionRequestOptions) => request<CancelDecisionResult>('DELETE', `/decisions/${id}`, undefined, options),
     getWebhookSecret: () => request<WebhookSecret>('GET', '/webhook-secret'),
     rotateWebhookSecret: () => request<WebhookSecret>('POST', '/webhook-secret'),
   })
