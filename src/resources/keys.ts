@@ -10,8 +10,8 @@ import type {
 // your backend with your own (unbound, Partner-plan) key to mint a child key bound
 // to one end-user, hand that key to the agent runtime acting for that user, then
 // revoke() it when the session ends. A bound key can only create, read and cancel
-// decisions for that exact end-user and enroll them, so a prompt-injected agent can
-// never reach another of your users. It cannot answer a decision; answer from your
+// decisions for that exact end-user, so a prompt-injected agent can
+// never reach another of your users. It cannot enroll devices or answer a decision; answer from your
 // server with your full-access key. Requires the Partner plan.
 export interface KeysResource {
   // Mint a key bound to externalId. The full key is returned once in `apiKey` and
