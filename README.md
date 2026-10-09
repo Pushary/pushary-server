@@ -445,3 +445,9 @@ HTTP deadline expiry raises `TimeoutError`. These calls do not retry internally.
 Aborting HTTP work does not withdraw a server-side decision: cancel its known ID
 with a separate cleanup signal. A lost create response may leave a decision until
 its configured expiration.
+
+## Personal reminders
+
+On an active Agent workspace, `pushary.reminders.schedule({ body: 'Check the deploy', inMinutes: 30 })` saves a one-time reminder that survives the agent exiting. Use `at` with an explicit UTC offset for calendar times, up to 30 days away. `pushary.reminders.list()` lists your pending reminders; `pushary.reminders.cancel(id)` cancels one before dispatch starts. Confirm the returned `reminder.fireAt`. Delivery requires a connected phone and can be about a minute late. These personal reminders do not schedule agent work or Partner customer campaigns.
+
+Personal reminder bodies must fit 180 UTF-16 units after secret redaction (most emoji use two); titles must fit 100. Oversized text is rejected. Listing and cancelling accepted reminders remain available when billing access closes.

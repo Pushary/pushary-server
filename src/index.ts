@@ -80,8 +80,8 @@ export type { NotificationsResource } from './resources/notifications'
 export type { FlowsResource } from './resources/flows'
 export type { DecisionsResource } from './resources/decisions'
 export type { KeysResource } from './resources/keys'
+export type { RemindersResource, ScheduleReminder, Reminder, ReminderResult } from './resources/reminders'
 
 export { verifyWebhookSignature, parseDecisionCallback, SIGNATURE_HEADER } from './webhook'
 
 export { deterministicKey, isApproved } from './util'
-

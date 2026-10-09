@@ -20,12 +20,14 @@ import { createNotificationsResource, type NotificationsResource } from './resou
 import { createFlowsResource, type FlowsResource } from './resources/flows'
 import { createDecisionsResource, type DecisionsResource } from './resources/decisions'
 import { createKeysResource, type KeysResource } from './resources/keys'
+import { createRemindersResource, type RemindersResource } from './resources/reminders'
 import { createAuthorize, createEvaluateAuthorization } from './authorize'
 import { createConsumeAuthorization, createRecordExecution } from './permits'
 
 const DEFAULT_BASE_URL = 'https://pushary.com/api/v1/server'
 
 export interface PusharyServer {
+  readonly reminders: RemindersResource
   readonly subscribers: SubscribersResource
   readonly campaigns: CampaignsResource
   readonly templates: TemplatesResource
@@ -95,6 +97,7 @@ export const createPusharyServer = (config: PusharyConfig): PusharyServer => {
     flows: createFlowsResource(request),
     decisions,
     keys: createKeysResource(request),
+    reminders: createRemindersResource(request),
     authorize: createAuthorize(request, decisions),
     evaluateAuthorization: createEvaluateAuthorization(request),
     consumeAuthorization: createConsumeAuthorization(request),
@@ -104,4 +107,3 @@ export const createPusharyServer = (config: PusharyConfig): PusharyServer => {
       request<DecisionReach>('GET', '/reachability', { externalId }),
   })
 }
-
