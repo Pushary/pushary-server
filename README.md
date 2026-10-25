@@ -1,6 +1,6 @@
 # @pushary/server
 
-The decision layer for AI agents. Your agent asks, your user decides on their phone.
+Human-in-the-loop (HITL) for AI agents. Your agent asks, and a person approves or answers on their phone by push notification.
 
 This is the server SDK for [Pushary](https://pushary.com). It also sends push notifications.
 

@@ -1,7 +1,7 @@
 {
   "name": "@pushary/server",
-  "version": "2.5.0",
-  "description": "The decision layer for AI agents. Your agent asks, your user decides on their phone. Also sends push notifications.",
+  "version": "2.5.1",
+  "description": "Human-in-the-loop (HITL) for AI agents: ask a person for approvals or answers by push notification, and send push notifications. Server SDK for the Pushary API.",
   "author": "Pushary <business@pushary.com>",
   "homepage": "https://pushary.com",
   "bugs": {
